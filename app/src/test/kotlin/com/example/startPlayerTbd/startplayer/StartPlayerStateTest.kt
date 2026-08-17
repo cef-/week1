@@ -163,4 +163,23 @@ class StartPlayerStateTest {
         assertEquals(listOf(33, 11), afterLift.selectedPointerIds)
         assertEquals("2 starting players selected", afterLift.resultText)
     }
+
+    @Test
+    fun `AC16 final lift retains result through 2999 milliseconds`() {
+        val result =
+            StartPlayerState.result(
+                selectedPointerIds = listOf(33, 11),
+                resultPositions =
+                    mapOf(
+                        33 to TouchPosition(120f, 400f),
+                        11 to TouchPosition(220f, 500f),
+                    ),
+            ).onPointerRemoved(33).onPointerRemoved(11)
+
+        assertEquals(3_000L, result.retentionRemainingMillis)
+        val retained = result.advanceTime(2_999)
+        assertEquals(listOf(33, 11), retained.selectedPointerIds)
+        assertEquals("2 starting players selected", retained.resultText)
+        assertEquals(1L, retained.retentionRemainingMillis)
+    }
 }

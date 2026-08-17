@@ -9,6 +9,7 @@ data class StartPlayerState(
     val selectedPointerIds: List<Int>,
     val resultPositions: Map<Int, TouchPosition>,
     val countdownRemainingMillis: Long?,
+    val retentionRemainingMillis: Long?,
 ) {
     val canDecreaseSelectionCount: Boolean
         get() = selectedStartingPlayerCount > MINIMUM_SELECTION_COUNT
@@ -64,6 +65,12 @@ data class StartPlayerState(
                     updatedPointers.size >= selectedStartingPlayerCount + 1 -> SETTLING_DELAY_MILLIS
                     else -> null
                 },
+            retentionRemainingMillis =
+                if (selectedPointerIds.isNotEmpty() && updatedPointers.isEmpty()) {
+                    RESULT_RETENTION_MILLIS
+                } else {
+                    retentionRemainingMillis
+                },
         )
     }
 
@@ -76,12 +83,17 @@ data class StartPlayerState(
                 countdownRemainingMillis?.let { remaining ->
                     (remaining - milliseconds).coerceAtLeast(0)
                 },
+            retentionRemainingMillis =
+                retentionRemainingMillis?.let { remaining ->
+                    (remaining - milliseconds).coerceAtLeast(0)
+                },
         )
 
     companion object {
         private const val MINIMUM_SELECTION_COUNT = 1
         private const val MAXIMUM_SELECTION_COUNT = 8
         private const val SETTLING_DELAY_MILLIS = 2_000L
+        private const val RESULT_RETENTION_MILLIS = 3_000L
 
         val selectableStartingPlayerCounts: List<Int> =
             (MINIMUM_SELECTION_COUNT..MAXIMUM_SELECTION_COUNT).toList()
@@ -96,6 +108,7 @@ data class StartPlayerState(
                 selectedPointerIds = emptyList(),
                 resultPositions = emptyMap(),
                 countdownRemainingMillis = null,
+                retentionRemainingMillis = null,
             )
 
         fun result(
