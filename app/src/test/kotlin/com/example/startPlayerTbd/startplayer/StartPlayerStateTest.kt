@@ -243,4 +243,20 @@ class StartPlayerStateTest {
         assertEquals("Starting players: 3", reset.startingPlayerCountText)
         assertEquals("Place at least 4 fingers", reset.minimumPlayersText)
     }
+
+    @Test
+    fun `AC22 new process state does not retain feature state`() {
+        StartPlayerState.result(
+            selectedPointerIds = listOf(33),
+            resultPositions = mapOf(33 to TouchPosition(120f, 400f)),
+        ).setSelectionCount(3)
+
+        val newProcessState = StartPlayerState.initial()
+
+        assertEquals(1, newProcessState.selectedStartingPlayerCount)
+        assertEquals(emptyList<Int>(), newProcessState.recognizedPointerIds)
+        assertEquals(emptyList<Int>(), newProcessState.selectedPointerIds)
+        assertEquals(emptyMap<Int, TouchPosition>(), newProcessState.resultPositions)
+        assertEquals("Players detected: 0", newProcessState.detectedPlayersText)
+    }
 }
