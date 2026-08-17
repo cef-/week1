@@ -40,4 +40,18 @@ class StartPlayerTouchAdapterTest {
         assertEquals(null, canceled.countdownRemainingMillis)
         assertEquals("Players detected: 0", canceled.detectedPlayersText)
     }
+
+    @Test
+    fun `AC20 tenth pointer is excluded from recognized players`() {
+        val pointers =
+            (1..10).map { pointerId ->
+                ReportedPointer(pointerId, TouchPosition(pointerId.toFloat(), pointerId.toFloat()))
+            }
+
+        val state = StartPlayerTouchAdapter().onPointers(pointers)
+
+        assertEquals(9, state.touchIndicators.size)
+        assertEquals((1..9).toList(), state.touchIndicators.map { it.pointerId })
+        assertEquals("Maximum 9 players supported", state.maximumPlayersText)
+    }
 }
