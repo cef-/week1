@@ -182,4 +182,27 @@ class StartPlayerStateTest {
         assertEquals("2 starting players selected", retained.resultText)
         assertEquals(1L, retained.retentionRemainingMillis)
     }
+
+    @Test
+    fun `AC17 final retention millisecond resets result and preserves configuration`() {
+        val retaining =
+            StartPlayerState.result(
+                selectedPointerIds = listOf(33, 11),
+                resultPositions =
+                    mapOf(
+                        33 to TouchPosition(120f, 400f),
+                        11 to TouchPosition(220f, 500f),
+                    ),
+            ).setSelectionCount(3)
+                .onPointerRemoved(33)
+                .onPointerRemoved(11)
+                .advanceTime(2_999)
+
+        val reset = retaining.advanceTime(1)
+
+        assertEquals(emptyList<Int>(), reset.selectedPointerIds)
+        assertEquals(emptyMap<Int, TouchPosition>(), reset.resultPositions)
+        assertEquals("Players detected: 0", reset.detectedPlayersText)
+        assertEquals(3, reset.selectedStartingPlayerCount)
+    }
 }

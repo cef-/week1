@@ -20,6 +20,9 @@ data class StartPlayerState(
     val countdownText: String?
         get() = countdownRemainingMillis?.let { "Hold fingers in place: ${(it + 999) / 1_000}" }
 
+    val detectedPlayersText: String
+        get() = "Players detected: ${recognizedPointerIds.size}"
+
     val resultText: String?
         get() =
             selectedPointerIds.takeIf { it.isNotEmpty() }?.let { selected ->
@@ -77,8 +80,16 @@ data class StartPlayerState(
     fun onPointerMoved(pointerId: Int, position: TouchPosition): StartPlayerState =
         copy(pointerPositions = pointerPositions + (pointerId to position))
 
-    fun advanceTime(milliseconds: Long): StartPlayerState =
-        copy(
+    fun advanceTime(milliseconds: Long): StartPlayerState {
+        if (retentionRemainingMillis != null && milliseconds >= retentionRemainingMillis) {
+            return copy(
+                pointerPositions = emptyMap(),
+                selectedPointerIds = emptyList(),
+                resultPositions = emptyMap(),
+                retentionRemainingMillis = null,
+            )
+        }
+        return copy(
             countdownRemainingMillis =
                 countdownRemainingMillis?.let { remaining ->
                     (remaining - milliseconds).coerceAtLeast(0)
@@ -88,6 +99,7 @@ data class StartPlayerState(
                     (remaining - milliseconds).coerceAtLeast(0)
                 },
         )
+    }
 
     companion object {
         private const val MINIMUM_SELECTION_COUNT = 1
