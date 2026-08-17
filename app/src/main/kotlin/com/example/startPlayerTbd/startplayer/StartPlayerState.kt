@@ -5,6 +5,7 @@ data class StartPlayerState(
     val startingPlayerCountText: String,
     val minimumPlayersText: String,
     val recognizedPointerIds: List<Int>,
+    val pointerPositions: Map<Int, TouchPosition>,
     val selectedPointerIds: List<Int>,
     val countdownRemainingMillis: Long?,
 ) {
@@ -55,6 +56,9 @@ data class StartPlayerState(
         )
     }
 
+    fun onPointerMoved(pointerId: Int, position: TouchPosition): StartPlayerState =
+        copy(pointerPositions = pointerPositions + (pointerId to position))
+
     fun advanceTime(milliseconds: Long): StartPlayerState =
         copy(
             countdownRemainingMillis =
@@ -77,6 +81,7 @@ data class StartPlayerState(
                 startingPlayerCountText = "Starting players: 1",
                 minimumPlayersText = "Place at least 2 fingers",
                 recognizedPointerIds = emptyList(),
+                pointerPositions = emptyMap(),
                 selectedPointerIds = emptyList(),
                 countdownRemainingMillis = null,
             )

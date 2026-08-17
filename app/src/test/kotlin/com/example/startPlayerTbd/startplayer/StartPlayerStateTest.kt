@@ -113,4 +113,21 @@ class StartPlayerStateTest {
         assertEquals(emptyList<Int>(), state.selectedPointerIds)
         assertEquals("Place at least 3 fingers", state.minimumPlayersText)
     }
+
+    @Test
+    fun `AC10 pointer movement updates position without restarting countdown`() {
+        val countingDown =
+            StartPlayerState.initial()
+                .setSelectionCount(3)
+                .onPointerAdded(11)
+                .onPointerAdded(22)
+                .onPointerAdded(33)
+                .onPointerAdded(44)
+                .advanceTime(800)
+
+        val moved = countingDown.onPointerMoved(11, TouchPosition(30f, 40f))
+
+        assertEquals(1_200L, moved.countdownRemainingMillis)
+        assertEquals(TouchPosition(30f, 40f), moved.pointerPositions[11])
+    }
 }
