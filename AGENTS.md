@@ -71,7 +71,17 @@ An incomplete testing strategy means the spec is not approved.
 
 ### tdd
 Prerequisite: a spec with a testing strategy (run spec first).
-For EACH acceptance criterion, in order:
+Classify each acceptance criterion from its testing-strategy row:
+- Automated AC: follow RED-GREEN-REFACTOR below.
+- Manual AC: label the row `Physical-device QA` and document the
+  exact setup, user actions, expected visible values, and required
+  device capability. Do not invent an automated RED step. Add lower-
+  level automated coverage where practical, then execute the AC on a
+  physical device and record device model, Android version, app build,
+  date, and PASS or FAIL evidence. A manual AC remains unverified until
+  that evidence exists.
+
+For EACH automated acceptance criterion, in order:
   RED      write the failing test for THIS AC only; the test name
            states the AC; run it and confirm it fails FOR THE RIGHT
            REASON (missing behaviour, not a broken import)
