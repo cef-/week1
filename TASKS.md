@@ -27,6 +27,5 @@ paths to the spec's Files to Modify table.
 20. Cap recognized pointers at nine, expose the exact maximum message, and exclude the tenth ID from selector input. Closes AC21.
 21. Return from an in-process result reset with the configured count and matching threshold text intact. Closes AC22.
 22. Ensure a newly constructed process state receives no prior count, pointers, result, or effects. Closes AC23.
-23. Run the two-person, two-finger physical-device procedure and record the required device evidence. Closes AC1.
-24. Run verified wrapper tasks `testDebugUnitTest`, `lintDebug`, `connectedDebugAndroidTest` when a target is available, and `check`; resolve failures against their mapped ACs. Closes AC2–AC23 only when all corresponding evidence passes.
-
+23. Run the two-person, two-finger physical-device procedure and record the required device evidence. Closes AC99.
+24. Run verified wrapper tasks `testDebugUnitTest`, `lintDebug`, `connectedDebugAndroidTest` when a target is available, and `check`; resolve failures against their mapped ACs. Closes AC2–AC23 and AC99 only when all corresponding evidence passes.

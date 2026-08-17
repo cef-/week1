@@ -7,7 +7,7 @@ selection is involved.
 
 | AC | Test | Exact input | Exact proof |
 |---|---|---|---|
-| AC1 | `[?] Physical-device QA: one of two players` | Physical Android device; count `1`; two people hold one finger each for `2,000 ms` while detected count stays `2` | Exactly one of two indicators has both result tokens, one remains unselected, and text is `1 starting player selected`. |
+| AC99 | `[?] Physical-device QA: one of two players` | Physical Android device; count `1`; two people hold one finger each for `2,000 ms` while detected count stays `2` | Exactly one of two indicators has both result tokens, one remains unselected, and text is `1 starting player selected`. |
 | AC2 | `[A] StartPlayerStateTest.AC2_defaultCount` | Create initial state | Count `1`; text `Starting players: 1`. |
 | AC3 | `[A] StartPlayerStateTest.AC3_setCountToThree` | Initial count `1`; set count to `3` | Count `3`; texts `Starting players: 3` and `Place at least 4 fingers`. |
 | AC4 | `[A] StartPlayerScreenTest.AC4_countBounds` | Attempt decrement at `1`; attempt increment at `8` | Values offered are exactly `1..8`; decrement disabled at `1`; increment disabled at `8`. |
@@ -33,8 +33,7 @@ selection is involved.
 
 ## Additional Manual Coverage
 
-Record device model, Android version, app build, date, and PASS/FAIL for AC1.
+Record device model, Android version, app build, date, and PASS/FAIL for AC99.
 The same physical-device pass also observes real multi-touch reporting, system-
 gesture cancellation, phone usability, and tablet smoke behavior; these checks
 supplement but do not replace the automated AC mappings above.
-

@@ -28,7 +28,7 @@ Add a dedicated start-player mode with these behaviors:
 
 ## Acceptance Criteria
 
-### AC1: Select one starting player from two players
+### AC99: Select one starting player from two players
 **Given** the selected starting-player count is `1`
 **And** two players each have exactly one finger recognized on the physical device screen
 **When** both fingers remain on the screen and the recognized finger count remains `2` for `2,000` milliseconds
@@ -230,7 +230,7 @@ The application has not been scaffolded yet. The package prefix below is resolve
 
 | Function | Case | Given | When | Then |
 |---|---|---|---|---|
-| Physical-device QA | AC1 one of two players | Starting-player count is `1`; two players each place one finger and the screen displays `Players detected: 2` | Keep both fingers on the screen with the detected count unchanged for `2,000 ms` | Exactly one of two indicators uses the start-player color and pattern tokens; exactly one remains unselected; text is `1 starting player selected` |
+| Physical-device QA | AC99 one of two players | Starting-player count is `1`; two players each place one finger and the screen displays `Players detected: 2` | Keep both fingers on the screen with the detected count unchanged for `2,000 ms` | Exactly one of two indicators uses the start-player color and pattern tokens; exactly one remains unselected; text is `1 starting player selected` |
 | `StartPlayerState.initial` | AC2 default | Start-player mode has just opened | Screen state is created | Count is `1`; text is `Starting players: 1` |
 | `StartPlayerState.setSelectionCount` | AC3 multiple selection | Count is `1` | Set count to `3` | Count is `3`; texts are `Starting players: 3` and `Place at least 4 fingers` |
 | `StartPlayerState.setSelectionCount` | AC4 bounds | Maximum players is `9` | Attempt decrement at `1` and increment at `8` | Values remain within `1..8`; decrement is disabled at `1`; increment is disabled at `8` |
