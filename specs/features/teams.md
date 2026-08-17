@@ -2,7 +2,7 @@
 
 ## Status
 
-Approved
+In Progress
 
 ## Problem Statement
 
@@ -213,17 +213,19 @@ Add a dedicated Teams mode with these behaviors:
 
 ## Files to Modify
 
-The application has not been scaffolded yet. The package prefix below is resolved when the Android project is created; the feature-local filenames and responsibilities are fixed by this spec.
+The Android application uses package `com.example.startPlayerTbd`.
 
 | File | Change |
 |---|---|
-| `app/src/main/kotlin/<package>/teams/TeamsScreen.kt` | Render team-count controls, status text, touch indicators, countdown, and frozen team effects. |
-| `app/src/main/kotlin/<package>/teams/TeamsState.kt` | Define collection, countdown, result, retention, reset, and cancellation state transitions. |
-| `app/src/main/kotlin/<package>/teams/TeamRandomizer.kt` | Shuffle opaque participant IDs and partition them into balanced, nonempty numbered teams. |
-| `app/src/main/kotlin/<package>/teams/TeamsTouchAdapter.kt` | Convert Android pointer events into stable pointer-ID membership and position updates, capped at `9`. |
-| `app/src/test/kotlin/<package>/teams/TeamRandomizerTest.kt` | Prove completeness, uniqueness, balance, deterministic assignment, and shuffle-uniformity properties. |
-| `app/src/test/kotlin/<package>/teams/TeamsStateTest.kt` | Prove countdown, cancellation, result retention, and reset behavior with a fake clock. |
-| `app/src/androidTest/kotlin/<package>/teams/TeamsScreenTest.kt` | Prove exact visible text, control bounds, indicator counts, and team-result semantics. |
+| `app/src/main/java/com/example/startPlayerTbd/MainActivity.kt` | Add separate Start Player and Teams mode controls and connect Teams touch events and timers to its state. |
+| `app/src/main/kotlin/com/example/startPlayerTbd/teams/TeamsScreen.kt` | Render team-count controls, status text, touch indicators, countdown, and frozen team effects. |
+| `app/src/main/kotlin/com/example/startPlayerTbd/teams/TeamsState.kt` | Define collection, countdown, result, retention, reset, and cancellation state transitions. |
+| `app/src/main/kotlin/com/example/startPlayerTbd/teams/TeamRandomizer.kt` | Shuffle opaque participant IDs and partition them into balanced, nonempty numbered teams. |
+| `app/src/main/kotlin/com/example/startPlayerTbd/teams/TeamsTouchAdapter.kt` | Convert Android pointer events into stable pointer-ID membership and position updates, capped at `9`. |
+| `app/src/test/kotlin/com/example/startPlayerTbd/teams/TeamRandomizerTest.kt` | Prove completeness, uniqueness, balance, deterministic assignment, and shuffle-uniformity properties. |
+| `app/src/test/kotlin/com/example/startPlayerTbd/teams/TeamsStateTest.kt` | Prove countdown, cancellation, result retention, and reset behavior with a fake clock. |
+| `app/src/test/kotlin/com/example/startPlayerTbd/teams/TeamsTouchAdapterTest.kt` | Prove pointer recognition, exact positions, cancellation, and the nine-player cap. |
+| `app/src/androidTest/kotlin/com/example/startPlayerTbd/teams/TeamsScreenTest.kt` | Prove exact visible text, control bounds, indicator counts, and team-result semantics. |
 
 ## Risk
 
