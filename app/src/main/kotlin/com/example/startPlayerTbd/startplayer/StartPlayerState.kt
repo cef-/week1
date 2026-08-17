@@ -19,6 +19,16 @@ data class StartPlayerState(
     val countdownText: String?
         get() = countdownRemainingMillis?.let { "Hold fingers in place: ${(it + 999) / 1_000}" }
 
+    val resultText: String?
+        get() =
+            selectedPointerIds.takeIf { it.isNotEmpty() }?.let { selected ->
+                if (selected.size == 1) {
+                    "1 starting player selected"
+                } else {
+                    "${selected.size} starting players selected"
+                }
+            }
+
     fun setSelectionCount(count: Int): StartPlayerState =
         count.coerceIn(MINIMUM_SELECTION_COUNT, MAXIMUM_SELECTION_COUNT).let { boundedCount ->
             copy(

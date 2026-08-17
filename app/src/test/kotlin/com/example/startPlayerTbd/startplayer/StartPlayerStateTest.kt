@@ -145,4 +145,22 @@ class StartPlayerStateTest {
         assertEquals(TouchPosition(120f, 400f), moved.resultPositions[33])
         assertEquals(null, moved.countdownRemainingMillis)
     }
+
+    @Test
+    fun `AC15 result remains while at least one finger is active`() {
+        val result =
+            StartPlayerState.result(
+                selectedPointerIds = listOf(33, 11),
+                resultPositions =
+                    mapOf(
+                        33 to TouchPosition(120f, 400f),
+                        11 to TouchPosition(220f, 500f),
+                    ),
+            )
+
+        val afterLift = result.onPointerRemoved(11)
+
+        assertEquals(listOf(33, 11), afterLift.selectedPointerIds)
+        assertEquals("2 starting players selected", afterLift.resultText)
+    }
 }
