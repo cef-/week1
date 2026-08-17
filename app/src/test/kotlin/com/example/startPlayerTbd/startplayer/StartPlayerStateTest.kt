@@ -50,4 +50,18 @@ class StartPlayerStateTest {
         assertEquals(null, state.countdownRemainingMillis)
         assertEquals("Place at least 4 fingers", state.minimumPlayersText)
     }
+
+    @Test
+    fun `AC6 required player count starts two second countdown`() {
+        val state =
+            StartPlayerState.initial()
+                .setSelectionCount(3)
+                .onPointerAdded(11)
+                .onPointerAdded(22)
+                .onPointerAdded(33)
+                .onPointerAdded(44)
+
+        assertEquals(2_000L, state.countdownRemainingMillis)
+        assertEquals("Hold fingers in place: 2", state.countdownText)
+    }
 }

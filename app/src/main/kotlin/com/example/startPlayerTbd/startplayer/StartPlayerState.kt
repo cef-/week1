@@ -14,6 +14,9 @@ data class StartPlayerState(
     val canIncreaseSelectionCount: Boolean
         get() = selectedStartingPlayerCount < MAXIMUM_SELECTION_COUNT
 
+    val countdownText: String?
+        get() = countdownRemainingMillis?.let { "Hold fingers in place: ${(it + 999) / 1_000}" }
+
     fun setSelectionCount(count: Int): StartPlayerState =
         count.coerceIn(MINIMUM_SELECTION_COUNT, MAXIMUM_SELECTION_COUNT).let { boundedCount ->
             copy(
@@ -23,14 +26,26 @@ data class StartPlayerState(
             )
         }
 
-    fun onPointerAdded(pointerId: Int): StartPlayerState =
-        copy(recognizedPointerIds = recognizedPointerIds + pointerId)
+    fun onPointerAdded(pointerId: Int): StartPlayerState {
+        val updatedPointers = recognizedPointerIds + pointerId
+        val requiredPlayers = selectedStartingPlayerCount + 1
+        return copy(
+            recognizedPointerIds = updatedPointers,
+            countdownRemainingMillis =
+                if (recognizedPointerIds.size < requiredPlayers && updatedPointers.size == requiredPlayers) {
+                    SETTLING_DELAY_MILLIS
+                } else {
+                    countdownRemainingMillis
+                },
+        )
+    }
 
     fun advanceTime(milliseconds: Long): StartPlayerState = this
 
     companion object {
         private const val MINIMUM_SELECTION_COUNT = 1
         private const val MAXIMUM_SELECTION_COUNT = 8
+        private const val SETTLING_DELAY_MILLIS = 2_000L
 
         val selectableStartingPlayerCounts: List<Int> =
             (MINIMUM_SELECTION_COUNT..MAXIMUM_SELECTION_COUNT).toList()
