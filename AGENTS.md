@@ -9,10 +9,10 @@
 
 ## What this is
 
-This app help in randomization tasks during the setup before starting board games. Supported tasks include:
+This app helps with randomization tasks during setup before starting board games. Supported tasks include:
 1) selecting random start player(s) among the players
-2) Seeding players to randomized teams
-Using the app required the minimum amount of user inputs and does not require user to input any text
+2) assigning players to randomized teams
+Using the app requires minimal user input and does not require the user to enter any text.
 
 ## Key Commands
 
@@ -37,14 +37,6 @@ Run commands from the repository root.
 - Multi-touch acceptance criteria must also be tested manually on a physical Android device.
 - Do not claim physical-device ACs passed based only on unit tests or emulator tests.
 - Do not run `clean` routinely; use it only when diagnosing stale build outputs.
-
-## Development Requirements
-
-- Use the repository’s Gradle wrapper; do not depend on a globally installed Gradle.
-- Keep randomization and team-assignment logic independent of Android APIs.
-- Use injectable randomness and controllable clocks in tests.
-- Treat `specs/features/*.md` as the authoritative feature requirements.
-- Implement and test each acceptance criterion individually.
 
 ## Workflows: research and spec
 
@@ -116,7 +108,6 @@ branched on.
 - Use descriptive names; avoid abbreviations except established terms such as `UI`, `ID`, and `AC`.
 - Keep functions focused on one responsibility.
 - Do not suppress compiler or lint warnings without an explanatory comment.
-- Do not introduce a dependency when Kotlin or Android standard libraries already provide the required behavior.
 
 ### Architecture
 
@@ -125,7 +116,6 @@ branched on.
 - Keep Android pointer handling, coordinates, drawing, and lifecycle behavior in the Android UI layer.
 - Use unidirectional data flow: UI sends actions; state holders update immutable UI state; UI renders that state.
 - Use one explicit state model for collection, countdown, result display, retention, and reset.
-- Do not add repositories, databases, networking, dependency-injection frameworks, or persistence unless a specification requires them.
 - Structure portable business logic so it can later move to Kotlin Multiplatform `commonMain`.
 
 ### Jetpack Compose
@@ -169,22 +159,10 @@ branched on.
 
 ### Testing
 
-- Treat `specs/features/*.md` as the authoritative behavior.
-- Every acceptance criterion must have a corresponding test or explicitly identified physical-device QA step.
 - Use controlled randomness in unit tests.
 - Use a fake clock or test scheduler for timing tests.
 - Test business logic without Compose or Android dependencies.
 - Test exact state values and exact displayed strings.
-- Do not weaken an acceptance criterion to make a test pass.
-- Multi-touch acceptance criteria marked for physical-device QA cannot be considered passed from emulator or unit-test results alone.
-
-### Change discipline
-
-- Implement only behavior required by an approved feature specification.
-- Preserve unrelated user changes.
-- Keep diffs focused; do not reformat unrelated files.
-- Run the narrowest relevant tests while iterating, then the full verification commands before completion.
-- Update the specification first when requested behavior conflicts with an existing acceptance criterion.
 
 ## Guardrails
 
@@ -208,41 +186,26 @@ branched on.
 
 ### Architecture boundaries
 
-- Do not expose Android types to randomization or team-assignment business logic.
-- Do not place randomization, timing, or state-transition logic directly in composable rendering code.
 - Do not identify players using names, accounts, or persisted identifiers.
 - Do not persist touch data, player assignments, or results.
-- Do not introduce a database, backend, network service, or dependency-injection framework without explicit approval.
 - Do not introduce a third-party randomization library; use Kotlin’s standard facilities behind an injectable abstraction.
-- Keep portable logic compatible with later extraction to Kotlin Multiplatform.
 
 ### Multi-touch safety
 
-- Track active fingers by stable pointer ID, never pointer-array index.
-- Never assume pointer indexes remain stable between events.
-- Handle gesture cancellation by clearing active touch state and canceling pending randomization.
 - Never include more than `9` players in a result.
 - Never generate a Start Player result unless at least `k + 1` fingers are recognized.
 - Never generate a Teams result unless at least `n` fingers are recognized.
 - Never create an empty team or assign one player to multiple teams.
-- Do not restart the countdown because a recognized finger moved.
-- Do not claim support for nine simultaneous touches on hardware that reports fewer touches.
 
 ### Randomness and timing
 
 - Do not use deterministic production seeds.
 - Do not use cryptographic or network-based randomness; this app does not require it.
-- Inject randomness in tests; do not write flaky statistical tests.
-- Use the specification constants: `2,000 ms` settling delay and `3,000 ms` result retention.
-- Do not use `Thread.sleep` for application timing or test synchronization.
-- Cancel obsolete timer jobs when touch membership changes or a gesture is canceled.
+- Do not write flaky statistical tests.
 - Never generate more than one result for the same settled touch session.
 
 ### UI and accessibility
 
-- Do not use color as the only indication of selection or team membership.
-- Combine color with pattern and visible text or numbering.
-- Do not place essential controls inside system-gesture or display-cutout insets.
 - Do not display internal pointer IDs to users.
 - Keep the detected-player count visible during touch collection.
 - Do not move or recalculate a displayed result after randomization.
@@ -267,10 +230,7 @@ branched on.
 
 ### Verification and completion
 
-- Run the narrowest relevant tests while iterating and the full configured verification suite before completion.
 - Do not claim tests passed unless they were actually executed successfully.
 - Report tests that could not be run and the exact reason.
-- Do not claim physical-device multi-touch ACs passed from JVM tests, Compose tests, or emulator results.
-- Physical-device ACs require evidence from a compatible Android device.
 - Do not call a feature complete while lint, required tests, or mapped AC checks are failing.
 - Do not delete or skip a failing test merely to obtain a green build.
