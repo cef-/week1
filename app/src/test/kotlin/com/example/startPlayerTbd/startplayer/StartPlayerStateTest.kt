@@ -20,4 +20,19 @@ class StartPlayerStateTest {
         assertEquals("Starting players: 3", state.startingPlayerCountText)
         assertEquals("Place at least 4 fingers", state.minimumPlayersText)
     }
+
+    @Test
+    fun `AC3 selection count is limited to one through eight`() {
+        assertEquals((1..8).toList(), StartPlayerState.selectableStartingPlayerCounts)
+
+        val minimumState = StartPlayerState.initial().setSelectionCount(0)
+        assertEquals(1, minimumState.selectedStartingPlayerCount)
+        assertEquals(false, minimumState.canDecreaseSelectionCount)
+        assertEquals(true, minimumState.canIncreaseSelectionCount)
+
+        val maximumState = StartPlayerState.initial().setSelectionCount(9)
+        assertEquals(8, maximumState.selectedStartingPlayerCount)
+        assertEquals(true, maximumState.canDecreaseSelectionCount)
+        assertEquals(false, maximumState.canIncreaseSelectionCount)
+    }
 }
