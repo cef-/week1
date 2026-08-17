@@ -1,24 +1,36 @@
 # Feature: Start Player Selection
 
-## Overview
+## Problem Statement
 
-Select one or more starting players from people simultaneously touching the device screen. Players are represented only by active finger touches; the feature does not request or store player names. The result is shown using color-and-pattern effects at the selected players' touch positions.
+Board-game players need a quick and impartial way to choose one or more starting players without entering names or using additional physical components. The app must recognize players through simultaneous finger touches, wait until the group is stable, select the configured number of starting players uniformly at random, and make the result unambiguous on a shared phone or tablet screen.
 
-## User Story
+## Proposed Change
 
-As a group starting a board game, we want the app to randomly select one or more of us from our fingers on the screen so that we can choose starting players without entering names or using physical components.
+Add a dedicated start-player mode with these behaviors:
+
+- Represent players only as active, session-local touch-pointer IDs; do not request or store names.
+- Default to selecting `1` starting player and allow values from `1` through `8`.
+- Require at least `k + 1` recognized fingers to select `k` starting players, ensuring at least one player remains unselected.
+- Recognize at most `9` players and visibly report every recognized touch.
+- Start a `3,000` millisecond settling countdown once enough fingers are present.
+- Restart the countdown when a finger is added or removed, cancel it when too few fingers remain, and leave it unchanged by finger movement.
+- Select exactly `k` distinct touches, with every valid `k`-touch subset having equal probability.
+- Identify selected players using both a color token and a pattern token at their positions at selection time.
+- Freeze the result until all fingers are removed, retain it for another `5,000` milliseconds, and then reset.
+- Reset immediately if a new finger appears during result retention.
+- Keep the configured starting-player count during in-process resets, but restore the default after the app process closes.
+- Keep random-selection logic independent of Android APIs so it can later move to Kotlin Multiplatform common code.
+- Target Android phones and tablets, optimize the initial layout for phones, and keep interactive controls outside system-gesture insets.
 
 ## Acceptance Criteria
 
 ### AC1: Default number of starting players
-
 **Given** start-player mode has just been opened
 **When** the start-player screen is displayed
 **Then** the selected starting-player count is `1`
 **And** the screen displays `Starting players: 1`
 
 ### AC2: Configure multiple starting players
-
 **Given** the selected starting-player count is `1`
 **When** the user increases the count to `3`
 **Then** the selected starting-player count is `3`
@@ -26,7 +38,6 @@ As a group starting a board game, we want the app to randomly select one or more
 **And** the screen displays `Place at least 4 fingers`
 
 ### AC3: Enforce the starting-player count range
-
 **Given** the app supports at most `9` recognized players and at least one player must remain unselected
 **When** the user changes the selected starting-player count
 **Then** the selectable values are the integers from `1` through `8` inclusive
@@ -34,7 +45,6 @@ As a group starting a board game, we want the app to randomly select one or more
 **And** the increase control is disabled when the value is `8`
 
 ### AC4: Recognize and display active fingers
-
 **Given** start-player mode is collecting players
 **When** `4` distinct active pointers are reported by the device
 **Then** the screen displays `Players detected: 4`
@@ -42,7 +52,6 @@ As a group starting a board game, we want the app to randomly select one or more
 **And** each indicator is centered on the current position of its corresponding active pointer
 
 ### AC5: Do not randomize below the required player count
-
 **Given** the selected starting-player count is `3`
 **And** exactly `3` fingers are recognized
 **When** the touch set remains unchanged for `3,000` milliseconds
@@ -51,7 +60,6 @@ As a group starting a board game, we want the app to randomly select one or more
 **And** no countdown is active
 
 ### AC6: Start the settling countdown at the required player count
-
 **Given** the selected starting-player count is `3`
 **And** exactly `3` fingers are recognized
 **When** a fourth finger is recognized
@@ -59,14 +67,12 @@ As a group starting a board game, we want the app to randomly select one or more
 **And** the screen displays `Hold fingers in place: 3`
 
 ### AC7: Restart the countdown when a finger is added
-
 **Given** the settling countdown has `1,200` milliseconds remaining
 **When** one additional finger is recognized
 **Then** the countdown restarts with `3,000` milliseconds remaining
 **And** the screen displays `Hold fingers in place: 3`
 
 ### AC8: Restart the countdown when a finger is removed
-
 **Given** the settling countdown has `1,200` milliseconds remaining
 **And** removing one finger still leaves at least the required number of recognized fingers
 **When** that finger is removed
@@ -74,7 +80,6 @@ As a group starting a board game, we want the app to randomly select one or more
 **And** the screen displays `Hold fingers in place: 3`
 
 ### AC9: Cancel the countdown when too few fingers remain
-
 **Given** the selected starting-player count is `2`
 **And** exactly `3` fingers are recognized
 **And** the settling countdown is active
@@ -84,14 +89,12 @@ As a group starting a board game, we want the app to randomly select one or more
 **And** the screen displays `Place at least 3 fingers`
 
 ### AC10: Finger movement does not restart the countdown
-
 **Given** the settling countdown has `1,200` milliseconds remaining
 **When** every recognized pointer retains its pointer ID but one pointer changes position
 **Then** the countdown still has `1,200` milliseconds remaining at that event time
 **And** the moved pointer's touch indicator is centered on its new position
 
 ### AC11: Select the configured number of distinct starting players
-
 **Given** the selected starting-player count is `2`
 **And** the recognized pointer IDs are `[11, 22, 33, 44]`
 **And** the random source is configured to select pointer IDs `[33, 11]`
@@ -102,7 +105,6 @@ As a group starting a board game, we want the app to randomly select one or more
 **And** the screen displays `2 starting players selected`
 
 ### AC12: Select each valid group with equal probability
-
 **Given** `p` distinct fingers are recognized
 **And** the selected starting-player count is `k`
 **And** `1 <= k < p <= 9`
@@ -111,7 +113,6 @@ As a group starting a board game, we want the app to randomly select one or more
 **And** no pointer ID appears more than once in the selected subset
 
 ### AC13: Show selected players using color and pattern
-
 **Given** pointer IDs `33` and `11` were selected
 **When** the result is displayed
 **Then** exactly one result effect is displayed at pointer `33`'s position at selection time
@@ -121,7 +122,6 @@ As a group starting a board game, we want the app to randomly select one or more
 **And** unselected pointers use neither the start-player color token nor the start-player pattern token
 
 ### AC14: Freeze the result after selection
-
 **Given** pointer ID `33` is selected and its result effect is centered at `(120, 400)`
 **When** pointer `33` moves to `(220, 500)`
 **Then** the selected pointer IDs remain unchanged
@@ -129,7 +129,6 @@ As a group starting a board game, we want the app to randomly select one or more
 **And** no new settling countdown starts
 
 ### AC15: Keep the result while at least one finger remains
-
 **Given** a result selected pointer IDs `[33, 11]`
 **And** at least one finger remains on the screen
 **When** another recognized finger is removed
@@ -137,7 +136,6 @@ As a group starting a board game, we want the app to randomly select one or more
 **And** the screen continues to display `2 starting players selected`
 
 ### AC16: Retain the result for five seconds after all fingers are removed
-
 **Given** a result selected pointer IDs `[33, 11]`
 **When** the final active finger is removed
 **Then** a result-retention timer starts at `5,000` milliseconds
@@ -145,7 +143,6 @@ As a group starting a board game, we want the app to randomly select one or more
 **And** the screen continues to display `2 starting players selected` through `4,999` elapsed milliseconds
 
 ### AC17: Reset after the result-retention period
-
 **Given** no fingers are active
 **And** the result-retention timer has been active for `4,999` milliseconds
 **When** one additional millisecond elapses
@@ -155,7 +152,6 @@ As a group starting a board game, we want the app to randomly select one or more
 **And** the selected starting-player count remains unchanged
 
 ### AC18: Reset immediately when a new finger arrives during retention
-
 **Given** no fingers are active
 **And** a previous result is `2 starting players selected`
 **And** the result-retention timer has `3,000` milliseconds remaining
@@ -167,7 +163,6 @@ As a group starting a board game, we want the app to randomly select one or more
 **And** the screen displays `Place at least 3 fingers`
 
 ### AC19: Handle gesture cancellation
-
 **Given** player collection or its settling countdown is active
 **When** Android reports cancellation of the active gesture
 **Then** the recognized pointer ID collection is empty
@@ -176,7 +171,6 @@ As a group starting a board game, we want the app to randomly select one or more
 **And** the screen displays `Players detected: 0`
 
 ### AC20: Limit recognized players to nine
-
 **Given** `9` fingers are already recognized
 **When** the device reports a tenth active pointer
 **Then** the recognized player count remains `9`
@@ -185,7 +179,6 @@ As a group starting a board game, we want the app to randomly select one or more
 **And** the tenth pointer is excluded from random selection
 
 ### AC21: Preserve configuration across a session reset
-
 **Given** the selected starting-player count is `3`
 **And** a completed result has reset after its `5,000` millisecond retention period
 **When** the start-player screen returns to player collection
@@ -194,7 +187,6 @@ As a group starting a board game, we want the app to randomly select one or more
 **And** the screen displays `Place at least 4 fingers`
 
 ### AC22: Do not persist feature state after the app closes
-
 **Given** the selected starting-player count was changed to `3`
 **And** a start-player result was displayed
 **When** the app process is closed and the app is launched again
@@ -203,40 +195,58 @@ As a group starting a board game, we want the app to randomly select one or more
 **And** the screen displays `Players detected: 0`
 **And** no selected-player effect is visible
 
-## Technical Constraints
+## Files to Modify
 
-- Target Android phones and tablets; optimize the initial layout for phones.
-- Use stable pointer IDs, not pointer indexes, to track fingers during an active gesture.
-- Treat only pointer addition, pointer removal, and gesture cancellation as touch-set changes; position changes do not change membership.
-- Keep Android touch-event handling and drawing concerns outside the random-selection logic.
-- Represent participants as opaque, session-local identifiers in the random-selection logic.
-- Keep selection logic free of Android APIs so it can later move to Kotlin Multiplatform common code.
-- Use an injectable or controllable random source for deterministic tests.
-- Do not request player names, network access, accounts, or storage permissions.
-- Do not persist player, result, or configuration state between app processes.
-- Avoid interactive touch targets inside system gesture insets.
+The application has not been scaffolded yet. The package prefix below is resolved when the Android project is created; the feature-local filenames and responsibilities are fixed by this spec.
 
-## Test Strategy
+| File | Change |
+|---|---|
+| `app/src/main/kotlin/<package>/startplayer/StartPlayerScreen.kt` | Render count controls, status text, touch indicators, countdown, and frozen result effects. |
+| `app/src/main/kotlin/<package>/startplayer/StartPlayerState.kt` | Define collection, countdown, result, retention, reset, and cancellation state transitions. |
+| `app/src/main/kotlin/<package>/startplayer/StartPlayerSelector.kt` | Select exactly `k` unique opaque participant IDs using an injectable random source. |
+| `app/src/main/kotlin/<package>/startplayer/StartPlayerTouchAdapter.kt` | Convert Android pointer events into stable pointer-ID membership and position updates, capped at `9`. |
+| `app/src/test/kotlin/<package>/startplayer/StartPlayerSelectorTest.kt` | Prove count, uniqueness, deterministic selection, and subset-uniformity properties. |
+| `app/src/test/kotlin/<package>/startplayer/StartPlayerStateTest.kt` | Prove countdown, cancellation, result retention, and reset behavior with a fake clock. |
+| `app/src/androidTest/kotlin/<package>/startplayer/StartPlayerScreenTest.kt` | Prove exact visible text, control bounds, indicator counts, and result semantics. |
 
-- Unit-test the pure selection logic, including uniqueness, configured selection count, and deterministic selections with a controlled random source.
-- Property-test or exhaustively test small inputs to verify that exactly `k` of `p` distinct participants are selected for every valid `1 <= k < p <= 9` input.
-- Unit-test the state machine with a fake clock for the `3,000` millisecond settling timer and `5,000` millisecond retention timer.
-- Test pointer addition, removal, movement, cancellation, and the nine-pointer cap through the Android touch adapter.
-- Use Compose UI tests for exact status text, enabled/disabled count controls, indicator counts, and result rendering semantics.
-- Validate multi-touch behavior on physical Android devices because emulator input and device hardware can differ in simultaneous-pointer support.
-- Validate phone layouts first and run a tablet smoke test to confirm the touch surface and controls remain usable.
+## Risk
 
-## Spec Readiness Checklist
+- What could break: Device touch hardware may report fewer than `9` simultaneous pointers; Android may cancel gestures near system-navigation areas; pointer indexes may be reordered between events; timers may race with pointer changes; color-only rendering would not distinguish results accessibly; a biased selection algorithm could favor some pointer subsets.
+- Rollback: Remove the start-player navigation entry and feature-local files listed above. Because the feature stores no persistent data and has no network or schema dependencies, rollback requires no data migration.
 
-- [x] The feature scope is limited to start-player selection; team assignment is excluded.
-- [x] Every acceptance criterion is numbered and uses Given/When/Then structure.
-- [x] Every Then clause names an exact value, state, collection, count, coordinate, duration, token, or output string.
-- [x] Defaults are explicit: `1` starting player, `3,000` millisecond settling delay, `5,000` millisecond result retention, and no persisted state.
-- [x] Valid bounds are explicit: `1` through `8` starting players and at most `9` recognized players.
-- [x] The minimum-player rule is explicit: selecting `k` starting players requires at least `k + 1` recognized fingers.
-- [x] Pointer addition, removal, movement, cancellation, and overflow behavior are specified.
-- [x] Random-selection uniqueness and fairness are specified in testable mathematical terms.
-- [x] Result presentation and result lifetime have precise expected states.
-- [x] Error and blocked states use exact user-visible strings.
-- [x] Each acceptance criterion can be mapped to a unit, state-machine, adapter, UI, or device test.
-- [x] Cross-platform preparation is limited to separating pure selection logic from Android UI code.
+## Testing Strategy (MANDATORY)
+
+| Function | Case | Given | When | Then |
+|---|---|---|---|---|
+| `StartPlayerState.initial` | AC1 default | Start-player mode has just opened | Screen state is created | Count is `1`; text is `Starting players: 1` |
+| `StartPlayerState.setSelectionCount` | AC2 multiple selection | Count is `1` | Set count to `3` | Count is `3`; texts are `Starting players: 3` and `Place at least 4 fingers` |
+| `StartPlayerState.setSelectionCount` | AC3 bounds | Maximum players is `9` | Attempt decrement at `1` and increment at `8` | Values remain within `1..8`; decrement is disabled at `1`; increment is disabled at `8` |
+| `StartPlayerTouchAdapter.onPointers` | AC4 recognition | Collection is active | Report IDs `[11,22,33,44]` and four positions | Text is `Players detected: 4`; exactly four indicators are centered on corresponding positions |
+| `StartPlayerState.advanceTime` | AC5 insufficient players | `k=3`; three fingers active | Advance `3,000 ms` without membership change | Selection is empty; text is `Place at least 4 fingers`; countdown is absent |
+| `StartPlayerState.onPointerAdded` | AC6 threshold reached | `k=3`; three fingers active | Add fourth finger | Countdown remaining is `3,000 ms`; text is `Hold fingers in place: 3` |
+| `StartPlayerState.onPointerAdded` | AC7 addition restart | Countdown remaining is `1,200 ms` | Add one finger | Countdown remaining is `3,000 ms`; text is `Hold fingers in place: 3` |
+| `StartPlayerState.onPointerRemoved` | AC8 removal restart | Countdown remaining is `1,200 ms`; enough fingers remain | Remove one finger | Countdown remaining is `3,000 ms`; text is `Hold fingers in place: 3` |
+| `StartPlayerState.onPointerRemoved` | AC9 removal cancellation | `k=2`; three fingers active; countdown active | Remove one finger | Countdown is absent; selection is empty; text is `Place at least 3 fingers` |
+| `StartPlayerState.onPointerMoved` | AC10 movement | Countdown remaining is `1,200 ms` | Move one pointer without changing its ID | Countdown remains `1,200 ms` at event time; indicator uses the new position |
+| `StartPlayerSelector.select` | AC11 deterministic selection | IDs `[11,22,33,44]`; `k=2`; fake random selects `[33,11]` | Settle for `3,000 ms` | Selection is exactly `[33,11]`; two effects exist; `22` and `44` are unselected; text is `2 starting players selected` |
+| `StartPlayerSelector.select` | AC12 subset uniformity | Every valid `1 <= k < p <= 9`; exhaustive deterministic random-decision streams | Enumerate all selector outcomes | Every `k`-ID subset occurs equally often; each has probability `1/C(p,k)`; every result contains unique IDs |
+| `StartPlayerScreen` | AC13 color and pattern | IDs `33` and `11` selected | Render result | One effect per selected position uses both start-player tokens; unselected pointers use neither token |
+| `StartPlayerState.onPointerMoved` | AC14 frozen result | ID `33` selected at `(120,400)` | Move ID `33` to `(220,500)` | Selection is unchanged; effect remains at `(120,400)`; countdown is absent |
+| `StartPlayerState.onPointerRemoved` | AC15 partial lift | Selection is `[33,11]`; at least one finger remains | Remove another recognized finger | Selection remains `[33,11]`; text remains `2 starting players selected` |
+| `StartPlayerState.onPointerRemoved` | AC16 retention starts | Selection is `[33,11]` | Remove final active finger | Retention starts at `5,000 ms`; selection and result text remain through elapsed `4,999 ms` |
+| `StartPlayerState.advanceTime` | AC17 retention expires | No fingers active; retention elapsed is `4,999 ms` | Advance `1 ms` | Selection is empty; no result effect; text is `Players detected: 0`; configured count is unchanged |
+| `StartPlayerState.onPointerAdded` | AC18 new session during retention | Previous two-player result; retention remaining is `3,000 ms` | Add ID `55` | Previous selection is empty; retention is canceled; one ordinary indicator; texts are `Players detected: 1` and `Place at least 3 fingers` |
+| `StartPlayerTouchAdapter.onCancel` | AC19 gesture canceled | Collection or countdown active | Receive Android gesture cancellation | Pointer collection and selection are empty; countdown absent; text is `Players detected: 0` |
+| `StartPlayerTouchAdapter.onPointerAdded` | AC20 tenth pointer | Nine IDs already recognized | Add a tenth pointer | Count and indicators remain `9`; text is `Maximum 9 players supported`; tenth ID is not selectable |
+| `StartPlayerState.resetSession` | AC21 in-process reset | Configured count is `3`; retention expires | Return to collection | Count remains `3`; texts are `Starting players: 3` and `Place at least 4 fingers` |
+| `StartPlayerState.initial` | AC22 process restart | Previous count was `3` and a result existed | Create state in a new app process | Count is `1`; selection is empty; text is `Players detected: 0`; no selected effect exists |
+
+A physical-device QA pass must additionally confirm simultaneous multi-touch reporting, system-gesture cancellation, phone usability, and tablet smoke behavior because those properties cannot be fully established by JVM or emulator tests.
+
+## Spec Readiness checklist (run before calling the spec done)
+
+- [x] Every AC has a precise expected value — no "works correctly"
+- [x] Another person could write a test from each AC without asking
+- [x] Every AC can fail — one that cannot fail proves nothing
+- [x] Error and edge cases have ACs of their own
+- [x] Every AC appears in the testing strategy table
