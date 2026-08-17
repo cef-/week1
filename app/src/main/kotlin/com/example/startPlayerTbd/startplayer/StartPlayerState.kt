@@ -43,6 +43,16 @@ data class StartPlayerState(
         }
 
     fun onPointerAdded(pointerId: Int): StartPlayerState {
+        if (retentionRemainingMillis != null) {
+            return copy(
+                recognizedPointerIds = listOf(pointerId),
+                pointerPositions = emptyMap(),
+                selectedPointerIds = emptyList(),
+                resultPositions = emptyMap(),
+                countdownRemainingMillis = null,
+                retentionRemainingMillis = null,
+            )
+        }
         val updatedPointers = recognizedPointerIds + pointerId
         val requiredPlayers = selectedStartingPlayerCount + 1
         return copy(

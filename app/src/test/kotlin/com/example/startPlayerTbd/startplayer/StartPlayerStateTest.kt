@@ -205,4 +205,27 @@ class StartPlayerStateTest {
         assertEquals("Players detected: 0", reset.detectedPlayersText)
         assertEquals(3, reset.selectedStartingPlayerCount)
     }
+
+    @Test
+    fun `AC18 new pointer during retention starts a fresh collection`() {
+        val retaining =
+            StartPlayerState.result(
+                selectedPointerIds = listOf(33, 11),
+                resultPositions =
+                    mapOf(
+                        33 to TouchPosition(120f, 400f),
+                        11 to TouchPosition(220f, 500f),
+                    ),
+            ).setSelectionCount(2)
+                .onPointerRemoved(33)
+                .onPointerRemoved(11)
+
+        val fresh = retaining.onPointerAdded(55)
+
+        assertEquals(emptyList<Int>(), fresh.selectedPointerIds)
+        assertEquals(null, fresh.retentionRemainingMillis)
+        assertEquals(listOf(55), fresh.recognizedPointerIds)
+        assertEquals("Players detected: 1", fresh.detectedPlayersText)
+        assertEquals("Place at least 3 fingers", fresh.minimumPlayersText)
+    }
 }
