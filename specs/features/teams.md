@@ -12,12 +12,12 @@ Add a dedicated Teams mode with these behaviors:
 - Default to `2` teams and allow values from `2` through `9`.
 - Require at least `n` recognized fingers to create `n` teams, ensuring every team has at least one player.
 - Recognize at most `9` players and visibly report every recognized touch.
-- Start a `3,000` millisecond settling countdown once enough fingers are present.
+- Start a `2,000` millisecond settling countdown once enough fingers are present.
 - Restart the countdown when a finger is added or removed, cancel it when too few fingers remain, and leave it unchanged by finger movement.
 - Randomly shuffle every recognized player and assign the shuffled players to numbered teams in round-robin order.
 - Give every player exactly one team and keep team sizes within one player of each other.
 - Identify each team using a unique combination of color token and pattern token at its members' positions at assignment time.
-- Freeze the result until all fingers are removed, retain it for another `5,000` milliseconds, and then reset.
+- Freeze the result until all fingers are removed, retain it for another `3,000` milliseconds, and then reset.
 - Reset immediately if a new finger appears during result retention.
 - Keep the configured team count during in-process resets, but restore the default after the app process closes.
 - Keep team-assignment logic independent of Android APIs so it can later move to Kotlin Multiplatform common code.
@@ -55,7 +55,7 @@ Add a dedicated Teams mode with these behaviors:
 ### AC5: Do not randomize below the required player count
 **Given** the selected team count is `4`
 **And** exactly `3` fingers are recognized
-**When** the touch set remains unchanged for `3,000` milliseconds
+**When** the touch set remains unchanged for `2,000` milliseconds
 **Then** no team assignment exists
 **And** the screen displays `Place at least 4 fingers`
 **And** no countdown is active
@@ -64,21 +64,21 @@ Add a dedicated Teams mode with these behaviors:
 **Given** the selected team count is `4`
 **And** exactly `3` fingers are recognized
 **When** a fourth finger is recognized
-**Then** a `3,000` millisecond settling countdown starts
-**And** the screen displays `Hold fingers in place: 3`
+**Then** a `2,000` millisecond settling countdown starts
+**And** the screen displays `Hold fingers in place: 2`
 
 ### AC7: Restart the countdown when a finger is added
 **Given** the settling countdown has `1,200` milliseconds remaining
 **When** one additional finger is recognized
-**Then** the countdown restarts with `3,000` milliseconds remaining
-**And** the screen displays `Hold fingers in place: 3`
+**Then** the countdown restarts with `2,000` milliseconds remaining
+**And** the screen displays `Hold fingers in place: 2`
 
 ### AC8: Restart the countdown when a finger is removed
 **Given** the settling countdown has `1,200` milliseconds remaining
 **And** removing one finger still leaves at least the selected number of teams
 **When** that finger is removed
-**Then** the countdown restarts with `3,000` milliseconds remaining
-**And** the screen displays `Hold fingers in place: 3`
+**Then** the countdown restarts with `2,000` milliseconds remaining
+**And** the screen displays `Hold fingers in place: 2`
 
 ### AC9: Cancel the countdown when too few fingers remain
 **Given** the selected team count is `3`
@@ -99,7 +99,7 @@ Add a dedicated Teams mode with these behaviors:
 **Given** the selected team count is `3`
 **And** the recognized pointer IDs are `[11, 22, 33, 44, 55, 66, 77]`
 **And** the controlled shuffle result is `[44, 11, 77, 22, 66, 33, 55]`
-**When** the touch set remains unchanged for `3,000` milliseconds
+**When** the touch set remains unchanged for `2,000` milliseconds
 **Then** Team `1` contains exactly `[44, 22, 55]`
 **And** Team `2` contains exactly `[11, 66]`
 **And** Team `3` contains exactly `[77, 33]`
@@ -150,13 +150,13 @@ Add a dedicated Teams mode with these behaviors:
 ### AC17: Retain the result for five seconds after all fingers are removed
 **Given** a result contains `3` teams
 **When** the final active finger is removed
-**Then** a result-retention timer starts at `5,000` milliseconds
-**And** every team assignment remains unchanged through `4,999` elapsed milliseconds
-**And** the screen continues to display `3 teams created` through `4,999` elapsed milliseconds
+**Then** a result-retention timer starts at `3,000` milliseconds
+**And** every team assignment remains unchanged through `2,999` elapsed milliseconds
+**And** the screen continues to display `3 teams created` through `2,999` elapsed milliseconds
 
 ### AC18: Reset after the result-retention period
 **Given** no fingers are active
-**And** the result-retention timer has been active for `4,999` milliseconds
+**And** the result-retention timer has been active for `2,999` milliseconds
 **When** one additional millisecond elapses
 **Then** the team-assignment collection is empty
 **And** no team result effect is visible
@@ -192,7 +192,7 @@ Add a dedicated Teams mode with these behaviors:
 
 ### AC22: Preserve configuration across a session reset
 **Given** the selected team count is `4`
-**And** a completed result has reset after its `5,000` millisecond retention period
+**And** a completed result has reset after its `3,000` millisecond retention period
 **When** the Teams screen returns to player collection
 **Then** the selected team count remains `4`
 **And** the screen displays `Teams: 4`
@@ -234,20 +234,20 @@ The application has not been scaffolded yet. The package prefix below is resolve
 | `TeamsState.setTeamCount` | AC2 configuration | Team count is `2` | Set team count to `4` | Count is `4`; texts are `Teams: 4` and `Place at least 4 fingers` |
 | `TeamsState.setTeamCount` | AC3 bounds | Maximum players is `9` | Attempt decrement at `2` and increment at `9` | Values remain within `2..9`; decrement is disabled at `2`; increment is disabled at `9` |
 | `TeamsTouchAdapter.onPointers` | AC4 recognition | Collection is active | Report IDs `[11,22,33,44]` and four positions | Text is `Players detected: 4`; exactly four indicators are centered on corresponding positions |
-| `TeamsState.advanceTime` | AC5 insufficient players | `n=4`; three fingers active | Advance `3,000 ms` without membership change | Assignment is empty; text is `Place at least 4 fingers`; countdown is absent |
-| `TeamsState.onPointerAdded` | AC6 threshold reached | `n=4`; three fingers active | Add fourth finger | Countdown remaining is `3,000 ms`; text is `Hold fingers in place: 3` |
-| `TeamsState.onPointerAdded` | AC7 addition restart | Countdown remaining is `1,200 ms` | Add one finger | Countdown remaining is `3,000 ms`; text is `Hold fingers in place: 3` |
-| `TeamsState.onPointerRemoved` | AC8 removal restart | Countdown remaining is `1,200 ms`; enough fingers remain | Remove one finger | Countdown remaining is `3,000 ms`; text is `Hold fingers in place: 3` |
+| `TeamsState.advanceTime` | AC5 insufficient players | `n=4`; three fingers active | Advance `2,000 ms` without membership change | Assignment is empty; text is `Place at least 4 fingers`; countdown is absent |
+| `TeamsState.onPointerAdded` | AC6 threshold reached | `n=4`; three fingers active | Add fourth finger | Countdown remaining is `2,000 ms`; text is `Hold fingers in place: 2` |
+| `TeamsState.onPointerAdded` | AC7 addition restart | Countdown remaining is `1,200 ms` | Add one finger | Countdown remaining is `2,000 ms`; text is `Hold fingers in place: 2` |
+| `TeamsState.onPointerRemoved` | AC8 removal restart | Countdown remaining is `1,200 ms`; enough fingers remain | Remove one finger | Countdown remaining is `2,000 ms`; text is `Hold fingers in place: 2` |
 | `TeamsState.onPointerRemoved` | AC9 removal cancellation | `n=3`; three fingers active; countdown active | Remove one finger | Countdown is absent; assignment is empty; text is `Place at least 3 fingers` |
 | `TeamsState.onPointerMoved` | AC10 movement | Countdown remaining is `1,200 ms` | Move one pointer without changing its ID | Countdown remains `1,200 ms` at event time; indicator uses the new position |
-| `TeamRandomizer.assign` | AC11 deterministic assignment | IDs `[11,22,33,44,55,66,77]`; `n=3`; controlled shuffle `[44,11,77,22,66,33,55]` | Settle for `3,000 ms` | Teams are exactly `1:[44,22,55]`, `2:[11,66]`, `3:[77,33]`; every ID occurs once; text is `3 teams created` |
+| `TeamRandomizer.assign` | AC11 deterministic assignment | IDs `[11,22,33,44,55,66,77]`; `n=3`; controlled shuffle `[44,11,77,22,66,33,55]` | Settle for `2,000 ms` | Teams are exactly `1:[44,22,55]`, `2:[11,66]`, `3:[77,33]`; every ID occurs once; text is `3 teams created` |
 | `TeamRandomizer.assign` | AC12 balance | Every valid `2 <= n <= p <= 9` | Generate an assignment | Exactly `n` nonempty teams; each size is `floor(p/n)` or `ceil(p/n)`; size difference is at most `1` |
 | `TeamRandomizer.shuffle` | AC13 shuffle properties | Every valid set of `2..9` distinct IDs; exhaustive deterministic random-decision streams | Enumerate all shuffle outcomes | Every permutation occurs equally often with probability `1/p!`; output contains every input ID exactly once |
 | `TeamsScreen` | AC14 color and pattern | Three specified teams containing seven IDs | Render result | Seven effects at assignment positions; same-team tokens match; three token pairs are distinct; labels are `1`, `2`, or `3` |
 | `TeamsState.onPointerMoved` | AC15 frozen result | ID `44` in Team `1` at `(120,400)` | Move ID `44` to `(220,500)` | Assignment is unchanged; effect remains at `(120,400)`; countdown is absent |
 | `TeamsState.onPointerRemoved` | AC16 partial lift | Three-team result; at least one finger remains | Remove another recognized finger | Assignment remains unchanged; text remains `3 teams created` |
-| `TeamsState.onPointerRemoved` | AC17 retention starts | Three-team result | Remove final active finger | Retention starts at `5,000 ms`; assignment and text remain through elapsed `4,999 ms` |
-| `TeamsState.advanceTime` | AC18 retention expires | No fingers active; retention elapsed is `4,999 ms` | Advance `1 ms` | Assignment is empty; no team effect; text is `Players detected: 0`; configured count is unchanged |
+| `TeamsState.onPointerRemoved` | AC17 retention starts | Three-team result | Remove final active finger | Retention starts at `3,000 ms`; assignment and text remain through elapsed `2,999 ms` |
+| `TeamsState.advanceTime` | AC18 retention expires | No fingers active; retention elapsed is `2,999 ms` | Advance `1 ms` | Assignment is empty; no team effect; text is `Players detected: 0`; configured count is unchanged |
 | `TeamsState.onPointerAdded` | AC19 new session during retention | Previous three-team result; retention remaining is `3,000 ms` | Add ID `88` | Previous assignment is empty; retention canceled; one ordinary indicator; texts are `Players detected: 1` and `Place at least 3 fingers` |
 | `TeamsTouchAdapter.onCancel` | AC20 gesture canceled | Collection or countdown active | Receive Android gesture cancellation | Pointer collection and assignment are empty; countdown absent; text is `Players detected: 0` |
 | `TeamsTouchAdapter.onPointerAdded` | AC21 tenth pointer | Nine IDs already recognized | Add a tenth pointer | Count and indicators remain `9`; text is `Maximum 9 players supported`; tenth ID is not assignable |
