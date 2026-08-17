@@ -32,4 +32,14 @@ class StartPlayerTouchAdapter {
                     )
                 },
         )
+
+    fun onCancel(state: StartPlayerState): StartPlayerState =
+        state.copy(
+            recognizedPointerIds = emptyList(),
+            pointerPositions = emptyMap(),
+            selectedPointerIds = emptyList(),
+            resultPositions = emptyMap(),
+            countdownRemainingMillis = null,
+            retentionRemainingMillis = null,
+        )
 }

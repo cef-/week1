@@ -23,4 +23,21 @@ class StartPlayerTouchAdapterTest {
             state.touchIndicators.map { indicator -> indicator.center },
         )
     }
+
+    @Test
+    fun `AC19 gesture cancellation clears collection and countdown`() {
+        val active =
+            StartPlayerState.initial()
+                .setSelectionCount(2)
+                .onPointerAdded(11)
+                .onPointerAdded(22)
+                .onPointerAdded(33)
+
+        val canceled = StartPlayerTouchAdapter().onCancel(active)
+
+        assertEquals(emptyList<Int>(), canceled.recognizedPointerIds)
+        assertEquals(emptyList<Int>(), canceled.selectedPointerIds)
+        assertEquals(null, canceled.countdownRemainingMillis)
+        assertEquals("Players detected: 0", canceled.detectedPlayersText)
+    }
 }
