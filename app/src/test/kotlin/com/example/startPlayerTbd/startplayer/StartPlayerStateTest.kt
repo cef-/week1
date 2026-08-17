@@ -228,4 +228,19 @@ class StartPlayerStateTest {
         assertEquals("Players detected: 1", fresh.detectedPlayersText)
         assertEquals("Place at least 3 fingers", fresh.minimumPlayersText)
     }
+
+    @Test
+    fun `AC21 in process reset preserves configured count and guidance`() {
+        val reset =
+            StartPlayerState.result(
+                selectedPointerIds = listOf(33),
+                resultPositions = mapOf(33 to TouchPosition(120f, 400f)),
+            ).setSelectionCount(3)
+                .onPointerRemoved(33)
+                .advanceTime(3_000)
+
+        assertEquals(3, reset.selectedStartingPlayerCount)
+        assertEquals("Starting players: 3", reset.startingPlayerCountText)
+        assertEquals("Place at least 4 fingers", reset.minimumPlayersText)
+    }
 }
