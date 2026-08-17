@@ -2,7 +2,7 @@
 
 ## Status
 
-In Progress
+Done
 
 ## Problem Statement
 
@@ -213,6 +213,7 @@ The application has not been scaffolded yet. The package prefix below is resolve
 
 | File | Change |
 |---|---|
+| `app/src/main/java/com/example/startPlayerTbd/MainActivity.kt` | Host the Start Player screen and connect Android touch events and timers to the feature state. |
 | `app/src/main/kotlin/com/example/startPlayerTbd/startplayer/StartPlayerScreen.kt` | Render count controls, status text, touch indicators, countdown, and frozen result effects. |
 | `app/src/main/kotlin/com/example/startPlayerTbd/startplayer/StartPlayerState.kt` | Define collection, countdown, result, retention, reset, and cancellation state transitions. |
 | `app/src/main/kotlin/com/example/startPlayerTbd/startplayer/StartPlayerSelector.kt` | Select exactly `k` unique opaque participant IDs using an injectable random source. |
@@ -256,6 +257,11 @@ The application has not been scaffolded yet. The package prefix below is resolve
 | `StartPlayerState.initial` | AC22 process restart | Previous count was `3` and a result existed | Create state in a new app process | Count is `1`; selection is empty; text is `Players detected: 0`; no selected effect exists |
 
 A physical-device QA pass must additionally confirm simultaneous multi-touch reporting, system-gesture cancellation, phone usability, and tablet smoke behavior because those properties cannot be fully established by JVM or emulator tests.
+
+## Verification Evidence
+
+- AC99 physical-device QA: PASS on Pixel 9a, Android 17, debug build, 2026-08-17. The tester confirmed that holding two fingers for `2,000 ms` selected exactly one indicator with the start-player color and diagonal pattern and displayed `1 starting player selected`.
+- Automated verification: `testDebugUnitTest`, `lintDebug`, and `connectedDebugAndroidTest` passed on 2026-08-17; the connected suite ran `2` tests on Pixel 9a, Android 17.
 
 ## Spec Readiness checklist (run before calling the spec done)
 
