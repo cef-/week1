@@ -1,5 +1,9 @@
 # Feature: Teams
 
+## Status
+
+Approved
+
 ## Problem Statement
 
 Board-game players need a quick and impartial way to divide themselves into balanced teams without entering names or using additional physical components. The app must recognize players through simultaneous finger touches, wait until the group is stable, assign every recognized player to exactly one team, and make each assignment unambiguous on a shared phone or tablet screen.

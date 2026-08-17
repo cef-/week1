@@ -18,22 +18,36 @@ Using the app requires minimal user input and does not require the user to enter
 
 Run commands from the repository root.
 
-### Windows
+These commands become authoritative after the Android project and
+Gradle wrapper have been created. Until then, report them as unavailable
+rather than claiming they were run.
 
-- `.\gradlew.bat assembleDebug` — build the debug APK
-- `.\gradlew.bat testDebugUnitTest` — run JVM unit tests
-- `.\gradlew.bat lintDebug` — run Android lint
-- `.\gradlew.bat connectedDebugAndroidTest` — run instrumented tests on a connected device or emulator
-- `.\gradlew.bat installDebug` — install the debug build on a connected device or emulator
-- `.\gradlew.bat check` — run the complete local verification suite
-- `.\gradlew.bat tasks` — list available Gradle tasks
+After scaffolding:
+1. Run the wrapper's `tasks` command.
+2. Confirm every command below exists.
+3. Update this section if generated task names differ.
+
+### Gradle wrapper
+
+- Windows: `.\gradlew.bat <task>`
+- macOS/Linux: `./gradlew <task>`
+
+### Tasks
+
+- `assembleDebug` — build the debug APK
+- `testDebugUnitTest` — run JVM unit tests
+- `lintDebug` — run Android lint
+- `connectedDebugAndroidTest` — run instrumented tests on a connected device or emulator
+- `installDebug` — install the debug build on a connected device or emulator
+- `check` — run the complete local verification suite
+- `tasks` — list available Gradle tasks
 
 ### Verification Rules
 
-- After business-logic changes, run `.\gradlew.bat testDebugUnitTest`.
-- After UI or Android integration changes, run unit tests and `.\gradlew.bat lintDebug`.
-- Before calling a feature complete, run `.\gradlew.bat check`.
-- Run `connectedDebugAndroidTest` when a device or emulator is available.
+- After business-logic changes, run the wrapper task `testDebugUnitTest`.
+- After UI or Android integration changes, run the wrapper tasks `testDebugUnitTest` and `lintDebug`.
+- Before calling a feature complete, run the wrapper task `check`.
+- Run the wrapper task `connectedDebugAndroidTest` when a device or emulator is available.
 - Multi-touch acceptance criteria must also be tested manually on a physical Android device.
 - Do not claim physical-device ACs passed based only on unit tests or emulator tests.
 - Do not run `clean` routinely; use it only when diagnosing stale build outputs.
@@ -67,6 +81,22 @@ Spec Readiness checklist — the spec is NOT ready until every box holds:
 - [ ] Every AC has at least one named test case
 An incomplete testing strategy means the spec is not approved.
 
+### Spec status
+
+Each feature spec has exactly one status:
+
+- `Draft` — incomplete or awaiting review
+- `Approved` — readiness checklist passes and the user approved implementation
+- `In Progress` — implementation has started
+- `Done` — all automated tests pass and all required manual evidence exists
+
+Allowed transitions:
+
+`Draft -> Approved -> In Progress -> Done`
+
+Do not implement a Draft spec. Only the user may approve a spec.
+Do not mark a spec Done while an AC is unverified.
+
 ## Workflows: tdd, develop, review
 
 ### tdd
@@ -98,9 +128,24 @@ Two traps, both near-certain:
   decides which one is wrong — correct the spec first, then the test.
 
 ### develop
-For work that has a spec: read it, follow the patterns already in
-the codebase, change only the files the spec lists, run tdd for the
-ACs, and update the spec status Draft -> In Progress -> Done.
+For work that has a spec: require status `Approved`, change it to
+`In Progress` before implementation, follow the listed scope, and
+change it to `Done` only after every AC has verification evidence.
+
+Change the files listed in the spec and any directly necessary
+supporting files, such as Gradle configuration, manifest entries,
+resources, navigation wiring, or test fixtures.
+
+Before modifying an unlisted file:
+1. Confirm the change is necessary for an AC.
+2. Add the actual path and purpose to the spec's Files to Modify table.
+3. Keep the change limited to that purpose.
+
+Do not use this exception for unrelated refactoring or cleanup.
+
+When the project has not been scaffolded, placeholder paths such as
+`<package>` are provisional. Resolve them during scaffolding and update
+the spec with actual paths before feature implementation continues.
 
 ### review
 Compare the diff against the spec: which AC each change serves, what
