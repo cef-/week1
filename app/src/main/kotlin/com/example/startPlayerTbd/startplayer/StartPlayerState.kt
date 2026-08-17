@@ -7,6 +7,7 @@ data class StartPlayerState(
     val recognizedPointerIds: List<Int>,
     val pointerPositions: Map<Int, TouchPosition>,
     val selectedPointerIds: List<Int>,
+    val resultPositions: Map<Int, TouchPosition>,
     val countdownRemainingMillis: Long?,
 ) {
     val canDecreaseSelectionCount: Boolean
@@ -83,7 +84,19 @@ data class StartPlayerState(
                 recognizedPointerIds = emptyList(),
                 pointerPositions = emptyMap(),
                 selectedPointerIds = emptyList(),
+                resultPositions = emptyMap(),
                 countdownRemainingMillis = null,
+            )
+
+        fun result(
+            selectedPointerIds: List<Int>,
+            resultPositions: Map<Int, TouchPosition>,
+        ): StartPlayerState =
+            initial().copy(
+                recognizedPointerIds = resultPositions.keys.toList(),
+                pointerPositions = resultPositions,
+                selectedPointerIds = selectedPointerIds,
+                resultPositions = resultPositions,
             )
     }
 }

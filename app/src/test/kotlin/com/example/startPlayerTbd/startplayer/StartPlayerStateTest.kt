@@ -130,4 +130,19 @@ class StartPlayerStateTest {
         assertEquals(1_200L, moved.countdownRemainingMillis)
         assertEquals(TouchPosition(30f, 40f), moved.pointerPositions[11])
     }
+
+    @Test
+    fun `AC14 selected result position remains frozen after pointer movement`() {
+        val result =
+            StartPlayerState.result(
+                selectedPointerIds = listOf(33),
+                resultPositions = mapOf(33 to TouchPosition(120f, 400f)),
+            )
+
+        val moved = result.onPointerMoved(33, TouchPosition(220f, 500f))
+
+        assertEquals(listOf(33), moved.selectedPointerIds)
+        assertEquals(TouchPosition(120f, 400f), moved.resultPositions[33])
+        assertEquals(null, moved.countdownRemainingMillis)
+    }
 }
