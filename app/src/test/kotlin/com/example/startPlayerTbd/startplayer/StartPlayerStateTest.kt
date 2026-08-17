@@ -98,4 +98,19 @@ class StartPlayerStateTest {
         assertEquals(2_000L, restarted.countdownRemainingMillis)
         assertEquals("Hold fingers in place: 2", restarted.countdownText)
     }
+
+    @Test
+    fun `AC9 removing below required count cancels countdown`() {
+        val state =
+            StartPlayerState.initial()
+                .setSelectionCount(2)
+                .onPointerAdded(11)
+                .onPointerAdded(22)
+                .onPointerAdded(33)
+                .onPointerRemoved(33)
+
+        assertEquals(null, state.countdownRemainingMillis)
+        assertEquals(emptyList<Int>(), state.selectedPointerIds)
+        assertEquals("Place at least 3 fingers", state.minimumPlayersText)
+    }
 }

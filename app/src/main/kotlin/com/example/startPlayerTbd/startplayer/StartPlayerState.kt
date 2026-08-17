@@ -47,12 +47,10 @@ data class StartPlayerState(
         return copy(
             recognizedPointerIds = updatedPointers,
             countdownRemainingMillis =
-                if (countdownRemainingMillis != null &&
-                    updatedPointers.size >= selectedStartingPlayerCount + 1
-                ) {
-                    SETTLING_DELAY_MILLIS
-                } else {
-                    countdownRemainingMillis
+                when {
+                    countdownRemainingMillis == null -> null
+                    updatedPointers.size >= selectedStartingPlayerCount + 1 -> SETTLING_DELAY_MILLIS
+                    else -> null
                 },
         )
     }
