@@ -42,6 +42,21 @@ data class StartPlayerState(
         )
     }
 
+    fun onPointerRemoved(pointerId: Int): StartPlayerState {
+        val updatedPointers = recognizedPointerIds - pointerId
+        return copy(
+            recognizedPointerIds = updatedPointers,
+            countdownRemainingMillis =
+                if (countdownRemainingMillis != null &&
+                    updatedPointers.size >= selectedStartingPlayerCount + 1
+                ) {
+                    SETTLING_DELAY_MILLIS
+                } else {
+                    countdownRemainingMillis
+                },
+        )
+    }
+
     fun advanceTime(milliseconds: Long): StartPlayerState =
         copy(
             countdownRemainingMillis =

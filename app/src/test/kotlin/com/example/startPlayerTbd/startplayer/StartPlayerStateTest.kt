@@ -81,4 +81,21 @@ class StartPlayerStateTest {
         assertEquals(2_000L, restarted.countdownRemainingMillis)
         assertEquals("Hold fingers in place: 2", restarted.countdownText)
     }
+
+    @Test
+    fun `AC8 removing a pointer restarts countdown when enough remain`() {
+        val countingDown =
+            StartPlayerState.initial()
+                .setSelectionCount(2)
+                .onPointerAdded(11)
+                .onPointerAdded(22)
+                .onPointerAdded(33)
+                .onPointerAdded(44)
+                .advanceTime(800)
+
+        val restarted = countingDown.onPointerRemoved(44)
+
+        assertEquals(2_000L, restarted.countdownRemainingMillis)
+        assertEquals("Hold fingers in place: 2", restarted.countdownText)
+    }
 }
