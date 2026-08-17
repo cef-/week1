@@ -4,6 +4,9 @@ data class StartPlayerState(
     val selectedStartingPlayerCount: Int,
     val startingPlayerCountText: String,
     val minimumPlayersText: String,
+    val recognizedPointerIds: List<Int>,
+    val selectedPointerIds: List<Int>,
+    val countdownRemainingMillis: Long?,
 ) {
     val canDecreaseSelectionCount: Boolean
         get() = selectedStartingPlayerCount > MINIMUM_SELECTION_COUNT
@@ -20,6 +23,11 @@ data class StartPlayerState(
             )
         }
 
+    fun onPointerAdded(pointerId: Int): StartPlayerState =
+        copy(recognizedPointerIds = recognizedPointerIds + pointerId)
+
+    fun advanceTime(milliseconds: Long): StartPlayerState = this
+
     companion object {
         private const val MINIMUM_SELECTION_COUNT = 1
         private const val MAXIMUM_SELECTION_COUNT = 8
@@ -32,6 +40,9 @@ data class StartPlayerState(
                 selectedStartingPlayerCount = 1,
                 startingPlayerCountText = "Starting players: 1",
                 minimumPlayersText = "Place at least 2 fingers",
+                recognizedPointerIds = emptyList(),
+                selectedPointerIds = emptyList(),
+                countdownRemainingMillis = null,
             )
     }
 }

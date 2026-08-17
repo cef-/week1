@@ -35,4 +35,19 @@ class StartPlayerStateTest {
         assertEquals(true, maximumState.canDecreaseSelectionCount)
         assertEquals(false, maximumState.canIncreaseSelectionCount)
     }
+
+    @Test
+    fun `AC5 insufficient players do not start countdown or selection`() {
+        val state =
+            StartPlayerState.initial()
+                .setSelectionCount(3)
+                .onPointerAdded(11)
+                .onPointerAdded(22)
+                .onPointerAdded(33)
+                .advanceTime(2_000)
+
+        assertEquals(emptyList<Int>(), state.selectedPointerIds)
+        assertEquals(null, state.countdownRemainingMillis)
+        assertEquals("Place at least 4 fingers", state.minimumPlayersText)
+    }
 }
