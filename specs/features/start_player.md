@@ -216,9 +216,10 @@ The application has not been scaffolded yet. The package prefix below is resolve
 | `app/src/main/kotlin/<package>/startplayer/StartPlayerScreen.kt` | Render count controls, status text, touch indicators, countdown, and frozen result effects. |
 | `app/src/main/kotlin/com/example/startPlayerTbd/startplayer/StartPlayerState.kt` | Define collection, countdown, result, retention, reset, and cancellation state transitions. |
 | `app/src/main/kotlin/<package>/startplayer/StartPlayerSelector.kt` | Select exactly `k` unique opaque participant IDs using an injectable random source. |
-| `app/src/main/kotlin/<package>/startplayer/StartPlayerTouchAdapter.kt` | Convert Android pointer events into stable pointer-ID membership and position updates, capped at `9`. |
+| `app/src/main/kotlin/com/example/startPlayerTbd/startplayer/StartPlayerTouchAdapter.kt` | Convert Android pointer events into stable pointer-ID membership and position updates, capped at `9`. |
 | `app/src/test/kotlin/<package>/startplayer/StartPlayerSelectorTest.kt` | Prove count, uniqueness, deterministic selection, and subset-uniformity properties. |
 | `app/src/test/kotlin/com/example/startPlayerTbd/startplayer/StartPlayerStateTest.kt` | Prove countdown, cancellation, result retention, and reset behavior with a fake clock. |
+| `app/src/test/kotlin/com/example/startPlayerTbd/startplayer/StartPlayerTouchAdapterTest.kt` | Prove stable pointer recognition and exact indicator positions for AC4. |
 | `app/src/androidTest/kotlin/<package>/startplayer/StartPlayerScreenTest.kt` | Prove exact visible text, control bounds, indicator counts, and result semantics. |
 
 ## Risk
