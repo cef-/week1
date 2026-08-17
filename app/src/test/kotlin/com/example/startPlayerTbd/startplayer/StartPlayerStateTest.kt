@@ -64,4 +64,21 @@ class StartPlayerStateTest {
         assertEquals(2_000L, state.countdownRemainingMillis)
         assertEquals("Hold fingers in place: 2", state.countdownText)
     }
+
+    @Test
+    fun `AC7 adding a pointer restarts active countdown`() {
+        val countingDown =
+            StartPlayerState.initial()
+                .setSelectionCount(3)
+                .onPointerAdded(11)
+                .onPointerAdded(22)
+                .onPointerAdded(33)
+                .onPointerAdded(44)
+                .advanceTime(800)
+        assertEquals(1_200L, countingDown.countdownRemainingMillis)
+
+        val restarted = countingDown.onPointerAdded(55)
+        assertEquals(2_000L, restarted.countdownRemainingMillis)
+        assertEquals("Hold fingers in place: 2", restarted.countdownText)
+    }
 }

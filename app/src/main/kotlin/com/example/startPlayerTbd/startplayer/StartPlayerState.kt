@@ -32,7 +32,9 @@ data class StartPlayerState(
         return copy(
             recognizedPointerIds = updatedPointers,
             countdownRemainingMillis =
-                if (recognizedPointerIds.size < requiredPlayers && updatedPointers.size == requiredPlayers) {
+                if (countdownRemainingMillis != null ||
+                    (recognizedPointerIds.size < requiredPlayers && updatedPointers.size == requiredPlayers)
+                ) {
                     SETTLING_DELAY_MILLIS
                 } else {
                     countdownRemainingMillis
@@ -40,7 +42,13 @@ data class StartPlayerState(
         )
     }
 
-    fun advanceTime(milliseconds: Long): StartPlayerState = this
+    fun advanceTime(milliseconds: Long): StartPlayerState =
+        copy(
+            countdownRemainingMillis =
+                countdownRemainingMillis?.let { remaining ->
+                    (remaining - milliseconds).coerceAtLeast(0)
+                },
+        )
 
     companion object {
         private const val MINIMUM_SELECTION_COUNT = 1
